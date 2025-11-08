@@ -1,0 +1,235 @@
+type: 'custom:hc_climate_card'    # tells HA to use your custom climate card
+entity: climate.downstairs        # the thermostat entity it will read from
+
+hc_climate_card:
+  variables:
+    show_window_state: true
+    window_open_boolean:
+    show_mode_state: true
+    show_graph: true
+    graph_entity:
+    graph_color: var(--color-red)
+    show_humidity_graph: true
+    humidity_entity:
+    humidity_graph_color: var(--color-blue)
+    current_temp_label: "Current Temperature: "
+  show_label: true
+  show_state: false
+  show_name: false
+  tap_action:
+    action: none
+
+  state_display: |
+    [[[ 
+      return variables.current_temp_label + states[entity.entity_id].attributes.current_temperature + "°";
+    ]]]
+  label: |
+    [[[ 
+      const s = states[entity.entity_id];
+      const temp = s.attributes.current_temperature;
+      const action = s.attributes.hvac_action; // actual action: 'off', 'idle', 'heating', 'eco'
+
+      let status = action; // just return the action status directly
+
+        // Ensure action appears directly beneath large temperature, flush left.
+        // Use block wrappers to avoid grid auto-placement causing centering.
+        // Dynamic color mapping for status
+        const colors = {
+          heating: '#FFB88C', // peach/orange
+          eco: '#2e7d32',     // green
+          idle: 'var(--subtext-color)',
+          off: 'var(--subtext-color)'
+        };
+        const statusColor = colors[status] || 'var(--subtext-color)';
+        return `<div style=\"text-align:left;line-height:1;\">${temp}<sup style=\"font-size:40px;\">°</sup></div>
+                <div style=\"text-align:left;margin-top:6px;font-size:16px;font-weight:500;color:${statusColor};letter-spacing:0.4px;\">${status}</div>`;
+    ]]]
+
+  show_icon: false
+
+  styles:
+    grid:
+      - grid-template-areas: |
+          'l buttons'
+          'n buttons'
+          's buttons'
+          'graph graph'
+          'humidity_graph humidity_graph'
+      - grid-template-rows: repeat(5, min-content)
+    card:
+      - padding: 20px
+      - position: relative
+    name:
+      - justify-self: start
+      - align-self: end
+      - font-weight: 0
+      - font-size: 20px
+      - z-index: 2
+      - margin-bottom: -7px
+      - pointer-events: none
+    label:
+      - font-size: 70px
+      - justify-self: start
+      - align-self: start
+      - font-weight: 700
+      - z-index: 2
+    state:
+      - justify-self: start
+      - color: var(--subtext-color)
+      - font-size: 20px
+      - margin-top: 4px
+      - font-weight: 500
+      - z-index: 2
+    custom_fields:
+      graph:
+        - display: |
+            [[[ return variables.show_graph && variables.graph_entity ? 'block' : 'none' ]]]
+        - position: absolute
+        - bottom: 0
+        - left: 0
+        - width: 100%
+        - height: 40%
+        - z-index: 0
+      humidity_graph:
+        - display: |
+            [[[ return variables.show_humidity_graph && variables.humidity_entity ? 'block' : 'none' ]]]
+        - position: absolute
+        - bottom: 0
+        - left: 0
+        - width: 100%
+        - height: 30%
+        - z-index: 0
+
+  custom_fields:
+    buttons:
+      card:
+        type: custom:button-card
+        styles:
+          grid:
+            - grid-template-areas: |
+                'item_1'
+                'item_2'
+                'item_3'
+            - row-gap: 1.20
+          card:
+            - padding: 10px
+            - border-radius: 50px
+            - box-shadow: 0 8px 8px rgba(0,0,0,0.15)
+            - background: white
+            - z-index: 3
+          custom_fields:
+            item_2:
+              - opacity: 0.7
+        custom_fields:
+          item_1:
+            card:
+              type: custom:button-card
+              icon: mdi:chevron-up
+              styles: &icon_style
+                icon:
+                  - width: 60px
+                  - height: 60px
+                card:
+                  - padding: 10px
+                  - border-radius: 500px
+                  - box-shadow: none
+                  - background: white
+              tap_action:
+                action: call-service
+                service: climate.set_temperature
+                data:
+                  temperature: |
+                    [[[ return states[entity.entity_id].attributes.temperature + 1 ]]]
+                target:
+                  entity_id: "[[[ return entity.entity_id ]]]"
+              show: |
+                [[[ return states[entity.entity_id].attributes.hvac_mode === 'heat' ]]]
+          item_2:
+            card:
+              type: custom:button-card
+              name: "[[[ return states[entity.entity_id].attributes.temperature + '°' ]]]"
+              styles:
+                name:
+                  - font-size: 20px
+                card:
+                  - box-shadow: none
+                  - background: white
+          item_3:
+            card:
+              type: custom:button-card
+              icon: mdi:chevron-down
+              styles: *icon_style
+              tap_action:
+                action: call-service
+                service: climate.set_temperature
+                data:
+                  temperature: |
+                    [[[ return states[entity.entity_id].attributes.temperature - 0.5 ]]]
+                target:
+                  entity_id: "[[[ return entity.entity_id ]]]"
+              show: |
+                [[[ return states[entity.entity_id].attributes.hvac_mode === 'heat' ]]]
+
+    graph:
+      card:
+        type: custom:mini-graph-card
+        entities:
+          - entity: >-
+              [[[ 
+                return (typeof variables.graph_entity === 'string' && variables.graph_entity.length > 0)
+                  ? variables.graph_entity
+                  : '';
+              ]]]
+            show_fill: true
+            show_line: false
+        show:
+          name: false
+          icon: false
+          state: false
+          points: false
+          labels: false
+        height: 100
+        line_width: 2
+        line_color: "[[[ return (typeof variables.graph_color === 'string') ? variables.graph_color : 'var(--color-red)' ]]]"
+        card_mod:
+          style: |
+            ha-card {
+              background: none;
+              box-shadow: none;
+              --ha-card-border-width: 0;
+              z-index: 1;
+            }
+        tap_action:
+          action: none
+
+    humidity_graph:
+      card:
+        type: custom:mini-graph-card
+        entities:
+          - entity: >-
+              [[[ 
+                return (typeof variables.humidity_entity === 'string' && variables.humidity_entity.length > 0)
+                  ? variables.humidity_entity
+                  : '';
+              ]]]
+            show_fill: true
+            show_line: false
+        show:
+          name: false
+          icon: false
+          state: false
+          points: false
+          labels: false
+        height: 80
+        line_width: 2
+        line_color: "[[[ return (typeof variables.humidity_graph_color === 'string') ? variables.humidity_graph_color : 'var(--color-blue)' ]]]"
+        card_mod:
+          style: |
+            ha-card {
+              background: none;
+              box-shadow: none;
+              --ha-card-border-width: 0;
+              z-index: 1;
+            }
+        tap_action:
+          action: none

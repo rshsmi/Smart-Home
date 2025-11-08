@@ -1,0 +1,55 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+  
+lovelace:
+  mode: "storage"
+  resources:
+   - url: "www/community/button-card/button-card.js"
+     type: "module"
+   - url: "www/community/my-cards/my-cards.js"
+     type: "module"
+   - url: "www/community/kiosk-mode/kiosk-mode.js"
+     type: module
+   - url: "www/community/lovelace-card-mod/card-mod.js"
+     type: module   
+   - url: "www/community/mini-graph-card/mini-graph-card-bundle.js"
+     type: module 
+   - url: "www/community/lovelace-layout-card/layout-card.js"
+     type: module        
+   - url: "https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900"
+     type: css
+  dashboards:
+    hacasa-dashboard:
+      mode: "yaml"
+      title: HaCasa
+      icon: fapro:house-fill
+      show_in_sidebar: true
+      filename: "dashboard/HaCasa/main.yaml"
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Simple approach: Store individual events in separate input_text helpers
+input_text:
+  calendar_trigger:
+    name: "Calendar Trigger"
+    max: 20
+    initial: "0"
+  event_1:
+    name: "Event 1"
+    max: 255
+    initial: ""
+  event_2:
+    name: "Event 2"
+    max: 255
+    initial: ""
+  event_3:
+    name: "Event 3"
+    max: 255
+    initial: ""

@@ -1,0 +1,66 @@
+fetch_calendar_events:
+  alias: "Fetch Calendar Events"
+  sequence:
+    # Update trigger first
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.calendar_trigger
+      data:
+        value: "{{ now().timestamp() | int }}"
+    
+    # Clear all events first
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.event_1
+      data:
+        value: ""
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.event_2
+      data:
+        value: ""
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.event_3
+      data:
+        value: ""
+    
+    # Get calendar events and store them directly
+    - service: calendar.get_events
+      target:
+        entity_id: calendar.ravan_studio
+      data:
+        start_date_time: "{{ now().strftime('%Y-%m-%d 00:00:00') }}"
+        end_date_time: "{{ (now() + timedelta(days=14)).strftime('%Y-%m-%d 23:59:59') }}"
+      response_variable: cal_events
+    
+    # Store events directly in the script (no automation needed)
+    - if:
+        - condition: template
+          value_template: "{{ cal_events['calendar.ravan_studio']['events'] | length >= 1 }}"
+      then:
+        - service: input_text.set_value
+          target:
+            entity_id: input_text.event_1
+          data:
+            value: "{{ cal_events['calendar.ravan_studio']['events'][0].start }}|{{ cal_events['calendar.ravan_studio']['events'][0].summary }}"
+    
+    - if:
+        - condition: template
+          value_template: "{{ cal_events['calendar.ravan_studio']['events'] | length >= 2 }}"
+      then:
+        - service: input_text.set_value
+          target:
+            entity_id: input_text.event_2
+          data:
+            value: "{{ cal_events['calendar.ravan_studio']['events'][1].start }}|{{ cal_events['calendar.ravan_studio']['events'][1].summary }}"
+    
+    - if:
+        - condition: template
+          value_template: "{{ cal_events['calendar.ravan_studio']['events'] | length >= 3 }}"
+      then:
+        - service: input_text.set_value
+          target:
+            entity_id: input_text.event_3
+          data:
+            value: "{{ cal_events['calendar.ravan_studio']['events'][2].start }}|{{ cal_events['calendar.ravan_studio']['events'][2].summary }}"

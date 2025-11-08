@@ -1,0 +1,25 @@
+title: Home
+path: "home"
+icon: fapro:house-fill
+cards:
+  - type: vertical-stack
+    cards:
+      - type: custom:button-card
+        template: hc_climate_card
+        entity: climate.downstairs
+        variables:
+          show_window_state: true
+          window_open_boolean: binary_sensor.window_downstairs
+          show_mode_state: true
+          show_graph: true
+          graph_entity: sensor.downstairs_temperature
+          graph_color: 'var(--color-red)'
+          show_humidity_graph: true
+          humidity_entity: sensor.downstairs_humidity
+          humidity_graph_color: 'var(--color-blue)'
+      - type: custom:button-card
+        template: hc_calendar_card
+        entity: calendar.ravan_studio
+      - type: custom:button-card
+        template: hc_light_weather
+        entity: weather.forecast_home
