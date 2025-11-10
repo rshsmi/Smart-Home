@@ -112,7 +112,7 @@ hc_calendar_card:
             ">
               <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div style="flex: 1;">
-                  <div style="color: #606060; font-size: 16px; font-weight: bold; margin-bottom: 4px;">
+                  <div style="color: #48506f; font-size: 16px; font-weight: bold; margin-bottom: 4px;">
                     ${dateString} ${timeString}
                   </div>
                   <div style="color: white; font-size: 16px; font-weight: bold;">
@@ -163,7 +163,7 @@ hc_calendar_card:
             <div style="position: relative; z-index: 1; text-align: left;">
               <!-- Header -->
               <div style="margin-bottom: 16px; text-align: left;">
-                <div style="color: #606060; font-size: 20px; font-weight: bold; margin-bottom: 4px; text-align: left;">
+                <div style="color: #48506f; font-size: 20px; font-weight: bold; margin-bottom: 4px; text-align: left;">
                   Dr. Mahsa Savadkohi
                 </div>
                 <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px; text-align: left;">
