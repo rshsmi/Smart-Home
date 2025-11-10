@@ -11,28 +11,29 @@ hc_calendar_card:
 
   styles:
     card:
-      - background-color: 'rgb(118, 171, 112)'  # Green background
+      - background: 'linear-gradient(135deg, #76ab70 0%, #6a9d64 100%)'
       - border-radius: 12px
       - padding: 0
       - box-shadow: '0 2px 8px rgba(0,0,0,0.3)'
-      - text-align: left
       - min-height: 300px
       - height: auto
       - position: relative
+      - overflow: hidden
     custom_fields:
       appointment_content:
+        - padding: 0
+        - margin: 0
+        - width: 100%
+        - height: 100%
         - position: absolute
-        - top: 0
         - left: 0
+        - top: 0
         - right: 0
         - bottom: 0
-        - padding: 24px
-        - box-sizing: border-box
 
   custom_fields:
     appointment_content: |
       [[[
-        // Great! We have one event working. Let's now display the actual events
         // Read events from simple input_text entities
         const events = [];
         
@@ -51,14 +52,13 @@ hc_calendar_card:
         
         if (events.length === 0) {
           return `
-            <div style="text-align: center; color: white; font-size: 24px; font-weight: bold; margin-top: 20px;">
-              UPCOMING APPOINTMENT
-            </div>
-            <div style="text-align: center; color: white; font-size: 18px; margin-top: 40px;">
-              Tap to load appointments
+            <div style="padding: 24px; text-align: left; color: white;">
+              <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">Dr. Mahsa Savadkohi</div>
+              <div style="font-size: 14px; opacity: 0.8;">Tap to load appointments</div>
             </div>
           `;
         }
+        
         const now = new Date();
         
         // Filter and sort events that are in the future
@@ -68,153 +68,114 @@ hc_calendar_card:
             return eventStart >= now;
           })
           .sort((a, b) => new Date(a.start) - new Date(b.start))
-          .slice(0, 10); // Limit to first 10 events to avoid overcrowding
+          .slice(0, 10);
         
         if (upcomingEvents.length === 0) {
           return `
-            <div style="text-align: center; color: #A0A0A0; font-size: 24px; font-weight: bold; margin-top: 20px;">
-              UPCOMING APPOINTMENT
-            </div>
-            <div style="text-align: center; color: #A0A0A0; font-size: 18px; margin-top: 40px;">
-              No upcoming appointments
+            <div style="padding: 24px; text-align: left; color: white;">
+              <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">Dr. Mahsa Savadkohi</div>
+              <div style="font-size: 14px; opacity: 0.8;">No upcoming appointments</div>
             </div>
           `;
         }
         
-        // Generate HTML for all events
-        let eventsHtml = '';
+        // Generate appointment boxes
+        let appointmentsHtml = '';
         upcomingEvents.forEach((event, index) => {
           const eventStart = new Date(event.start);
-          const eventEnd = event.end ? new Date(event.end) : null;
           
+          const dayName = eventStart.toLocaleDateString('en-US', { weekday: 'long' });
           const dayNum = eventStart.getDate();
           const monthName = eventStart.toLocaleDateString('en-US', { month: 'long' });
-          const dateString = `${dayNum} ${monthName}`;
+          const dateString = `${dayName} ${dayNum} ${monthName}`;
           
-          // Check if it's an all-day event
           const isAllDay = event.start.length === 10 || (event.end && event.end.length === 10);
-          const timeString = isAllDay ? 'All Day' : eventStart.toLocaleTimeString('en-US', { 
+          const timeString = isAllDay ? '' : eventStart.toLocaleTimeString('en-US', { 
             hour: 'numeric', 
             minute: '2-digit', 
             hour12: true 
           });
           
-          // Clean up event title
           let eventTitle = event.summary || 'Untitled Event';
           if (eventTitle.includes(':')) {
             eventTitle = eventTitle.split(':')[0].trim();
           }
           
-          // Only add margin-bottom if it's not the last event
-          const isLastEvent = (index === upcomingEvents.length - 1);
-          
-          eventsHtml += `
+          appointmentsHtml += `
             <div style="
-              display: flex; 
-              flex-direction: column; 
-              margin-bottom: ${isLastEvent ? '0px' : '15px'}; 
-              width: 100%; 
-              text-align: left;
+              background: rgba(255, 255, 255, 0.2);
+              backdrop-filter: blur(10px);
+              border: 1px solid rgba(255, 255, 255, 0.3);
+              border-radius: 16px;
+              padding: 16px;
+              margin-bottom: ${index === upcomingEvents.length - 1 ? '0' : '12px'};
             ">
-              <!-- Date and Time Row -->
-              <div style="
-                display: flex; 
-                align-items: baseline;
-                margin-bottom: 2px;
-                gap: 30px;
-                width: 100%;
-              ">
-                <div style="
-                  font-size: 24px; 
-                  font-weight: bold; 
-                  color: white; 
-                  line-height: 1;
-                  text-align: left;
-                ">
-                  ${dateString}
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="flex: 1;">
+                  <div style="color: #606060; font-size: 16px; font-weight: bold; margin-bottom: 4px;">
+                    ${dateString} ${timeString}
+                  </div>
+                  <div style="color: white; font-size: 16px; font-weight: bold;">
+                    ${eventTitle}
+                  </div>
                 </div>
                 <div style="
-                  font-size: 24px; 
-                  font-weight: bold; 
-                  color: white; 
-                  line-height: 1;
-                  text-align: left;
+                  width: 36px;
+                  height: 36px;
+                  background: rgba(255, 255, 255, 0.2);
+                  border-radius: 10px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  margin-left: 12px;
                 ">
-                  ${timeString}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: white;">
+                    <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/>
+                  </svg>
                 </div>
-              </div>
-              
-              <!-- Appointment Title -->
-              <div style="
-                font-size: 18px; 
-                color: #606060; 
-                font-weight: normal;
-                text-align: left;
-                width: 100%;
-              ">
-                ${eventTitle}
               </div>
             </div>
           `;
         });
         
         return `
-          <!-- Background Leaf SVG (thicker & brighter) -->
-          <div style="
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 80px;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.6;
-            pointer-events: none;
-          ">
-            <svg viewBox="0 0 295 588" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%;">
-              <g clip-path="url(#clip0_2026_273)">
-                <g transform="translate(295,0) scale(-1,1)">
-                  <path d="M135.34 284.36C123.8 284.36 111.3 281.61 98.5398 276.2C79.8398 268.28 67.4998 257.86 64.1598 254.86C49.3098 241.48 38.3498 222.36 33.1498 212.15C31.7298 209.37 31.6298 206.13 32.8598 203.27C34.0898 200.39 36.5198 198.23 39.5198 197.34L105.32 177.77C110.14 176.34 113.8 172.5 114.66 168C115.31 164.57 114.51 161.56 112.22 158.8C109.2 155.15 104.03 153.58 99.0498 154.79L25.8498 172.55C21.1098 173.7 16.2298 171.46 13.9798 167.11C9.37979 158.22 7.56979 147.69 6.85979 140.41C6.38979 135.63 9.21979 131.15 13.7198 129.51L46.4598 117.66C47.1298 117.42 47.7198 117.04 48.1498 116.57C51.9598 112.46 53.7998 108.8 53.6198 105.7C53.4998 103.54 52.3298 101.51 50.1698 99.6602C46.5798 96.5902 41.5698 95.3102 36.4298 96.1502L12.2598 100.14C9.21979 100.64 6.11979 99.7902 3.74979 97.7902C1.37979 95.7802 0.00978809 92.8602 -0.000211913 89.7602C-0.140212 46.1702 6.34979 20.6802 9.14979 11.7502C10.2498 8.26017 13.1198 5.57017 16.6398 4.73017C66.7198 -7.18983 120.79 6.45017 141.71 12.8802C144.52 13.7402 146.86 15.7602 148.12 18.4102C149.39 21.0702 149.48 24.1602 148.38 26.8902L129.05 74.6902C127.11 79.4802 127.74 84.7702 130.69 88.4902C133.45 91.9702 137 93.1102 141.52 91.9802C146.08 90.8402 149.94 87.5002 152.11 82.8302L173.83 36.2302C175.64 32.3402 179.55 29.9602 183.79 30.1802C196.43 30.8102 206.28 40.1602 211.02 45.6902C213.64 48.7502 214.28 53.1102 212.64 56.8002L182.85 123.96C180.9 128.35 181.02 133.22 183.17 136.99C185.13 140.43 188.13 142.21 192.35 142.44C197.8 142.73 203.1 139.27 205.49 133.82L229.59 78.9402C231.15 75.4002 234.37 73.0702 238.22 72.7102C242.08 72.3502 245.69 74.0402 247.88 77.2402C254.47 86.8202 263.56 101.8 269.46 118.74C276.6 139.22 277.35 157.46 271.68 172.95C263.45 195.44 241.87 211.62 207.52 221.03C206.43 221.33 205.32 220.99 204.58 220.24C205.04 221.03 205.13 222.03 204.74 222.93L196.97 240.9C196.97 240.9 196.93 240.98 196.91 241.02C185.27 264.95 168.79 279.15 147.92 283.22C143.88 284.01 139.67 284.4 135.32 284.4L135.34 284.36Z" fill="white" stroke="white" stroke-width="8" fill-rule="evenodd" clip-rule="evenodd"/>
-                  <path d="M89.7298 54.42C89.4498 54.42 89.1698 54.42 88.8998 54.4C84.7398 54.18 80.9198 52.36 78.1298 49.26C75.3398 46.16 73.9298 42.17 74.1498 38.01C74.3698 33.85 76.1898 30.03 79.2898 27.24C85.6798 21.49 95.5598 22 101.31 28.39C104.1 31.49 105.51 35.48 105.29 39.64C105.07 43.8 103.25 47.62 100.15 50.41C97.2598 53.01 93.5898 54.41 89.7398 54.41L89.7298 54.42ZM89.7098 29.24C87.4198 29.24 85.1298 30.05 83.2898 31.7C81.3898 33.41 80.2598 35.77 80.1298 38.32C79.9998 40.88 80.8698 43.34 82.5798 45.24C84.2898 47.14 86.6498 48.27 89.2098 48.4C91.7698 48.53 94.2298 47.66 96.1298 45.95C98.0298 44.24 99.1598 41.88 99.2898 39.32C99.4198 36.76 98.5498 34.3 96.8398 32.4C94.9498 30.3 92.3298 29.23 89.7098 29.23V29.24Z" fill="white" stroke="white" stroke-width="5" fill-rule="evenodd" clip-rule="evenodd"/>
-                  <path d="M117.5 237.02C117.22 237.02 116.94 237.02 116.67 237C112.51 236.78 108.69 234.96 105.9 231.86C100.15 225.47 100.66 215.59 107.05 209.84C110.15 207.05 114.14 205.64 118.3 205.86C122.46 206.08 126.28 207.9 129.07 211C131.86 214.1 133.27 218.09 133.05 222.25C132.83 226.41 131.01 230.23 127.91 233.02C125.02 235.62 121.35 237.03 117.5 237.03V237.02ZM110.35 227.85C112.06 229.75 114.42 230.88 116.98 231.01C119.54 231.14 122 230.27 123.9 228.56C125.8 226.85 126.93 224.49 127.06 221.93C127.19 219.37 126.32 216.91 124.61 215.01C122.9 213.11 120.54 211.98 117.98 211.85C115.43 211.72 112.96 212.59 111.06 214.3C107.13 217.84 106.81 223.92 110.35 227.85Z" fill="white" stroke="white" stroke-width="5" fill-rule="evenodd" clip-rule="evenodd"/>
-                  <path d="M273.58 587.88C239.36 587.88 208.91 581.92 183.85 570.15C151.2 554.82 128.6 530.1 120.21 500.56C113.97 478.57 116.26 455.3 126.66 435.03C137.7 413.51 156.96 396.55 182.35 385.96C216.47 371.73 236.81 352.67 242.8 329.32C246.44 315.12 244.91 298.88 238.24 281.05C231.47 262.94 219.22 242.72 201.86 220.96C200.83 219.67 201.04 217.78 202.33 216.74C203.62 215.71 205.51 215.92 206.55 217.21C242.3 262.01 256.46 300.23 248.61 330.81C242.13 356.09 220.61 376.51 184.66 391.5C160.6 401.54 142.39 417.54 132 437.77C122.29 456.68 120.15 478.4 125.98 498.92C133.89 526.77 155.34 550.13 186.4 564.72C222.91 581.86 271.41 586.27 326.65 577.46C328.28 577.2 329.82 578.31 330.09 579.95C330.35 581.59 329.24 583.12 327.6 583.39C308.78 586.39 290.71 587.88 273.58 587.88Z" fill="white" stroke="white" stroke-width="8" fill-rule="evenodd" clip-rule="evenodd"/>
-                </g>
+          <div style="position: relative; width: 100%; height: 100%; box-sizing: border-box; margin: 0; padding: 24px 24px 24px 12px;">
+            <!-- SVG Background -->
+            <svg style="
+              position: absolute;
+              left: -12px;
+              top: 0;
+              width: 150px;
+              height: 100%;
+              opacity: 0.2;
+              pointer-events: none;
+            " viewBox="0 0 295 588" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin slice">
+              <g transform="translate(295,0) scale(-1,1)">
+                <path d="M135.34 284.36C123.8 284.36 111.3 281.61 98.5398 276.2C79.8398 268.28 67.4998 257.86 64.1598 254.86C49.3098 241.48 38.3498 222.36 33.1498 212.15C31.7298 209.37 31.6298 206.13 32.8598 203.27C34.0898 200.39 36.5198 198.23 39.5198 197.34L105.32 177.77C110.14 176.34 113.8 172.5 114.66 168C115.31 164.57 114.51 161.56 112.22 158.8C109.2 155.15 104.03 153.58 99.0498 154.79L25.8498 172.55C21.1098 173.7 16.2298 171.46 13.9798 167.11C9.37979 158.22 7.56979 147.69 6.85979 140.41C6.38979 135.63 9.21979 131.15 13.7198 129.51L46.4598 117.66C47.1298 117.42 47.7198 117.04 48.1498 116.57C51.9598 112.46 53.7998 108.8 53.6198 105.7C53.4998 103.54 52.3298 101.51 50.1698 99.6602C46.5798 96.5902 41.5698 95.3102 36.4298 96.1502L12.2598 100.14C9.21979 100.64 6.11979 99.7902 3.74979 97.7902C1.37979 95.7802 0.00978809 92.8602 -0.000211913 89.7602C-0.140212 46.1702 6.34979 20.6802 9.14979 11.7502C10.2498 8.26017 13.1198 5.57017 16.6398 4.73017C66.7198 -7.18983 120.79 6.45017 141.71 12.8802C144.52 13.7402 146.86 15.7602 148.12 18.4102C149.39 21.0702 149.48 24.1602 148.38 26.8902L129.05 74.6902C127.11 79.4802 127.74 84.7702 130.69 88.4902C133.45 91.9702 137 93.1102 141.52 91.9802C146.08 90.8402 149.94 87.5002 152.11 82.8302L173.83 36.2302C175.64 32.3402 179.55 29.9602 183.79 30.1802C196.43 30.8102 206.28 40.1602 211.02 45.6902C213.64 48.7502 214.28 53.1102 212.64 56.8002L182.85 123.96C180.9 128.35 181.02 133.22 183.17 136.99C185.13 140.43 188.13 142.21 192.35 142.44C197.8 142.73 203.1 139.27 205.49 133.82L229.59 78.9402C231.15 75.4002 234.37 73.0702 238.22 72.7102C242.08 72.3502 245.69 74.0402 247.88 77.2402C254.47 86.8202 263.56 101.8 269.46 118.74C276.6 139.22 277.35 157.46 271.68 172.95C263.45 195.44 241.87 211.62 207.52 221.03C206.43 221.33 205.32 220.99 204.58 220.24C205.04 221.03 205.13 222.03 204.74 222.93L196.97 240.9C196.97 240.9 196.93 240.98 196.91 241.02C185.27 264.95 168.79 279.15 147.92 283.22C143.88 284.01 139.67 284.4 135.32 284.4L135.34 284.36Z" fill="white" stroke="white" stroke-width="4"/>
+                <path d="M89.7298 54.42C89.4498 54.42 89.1698 54.42 88.8998 54.4C84.7398 54.18 80.9198 52.36 78.1298 49.26C75.3398 46.16 73.9298 42.17 74.1498 38.01C74.3698 33.85 76.1898 30.03 79.2898 27.24C85.6798 21.49 95.5598 22 101.31 28.39C104.1 31.49 105.51 35.48 105.29 39.64C105.07 43.8 103.25 47.62 100.15 50.41C97.2598 53.01 93.5898 54.41 89.7398 54.41L89.7298 54.42ZM89.7098 29.24C87.4198 29.24 85.1298 30.05 83.2898 31.7C81.3898 33.41 80.2598 35.77 80.1298 38.32C79.9998 40.88 80.8698 43.34 82.5798 45.24C84.2898 47.14 86.6498 48.27 89.2098 48.4C91.7698 48.53 94.2298 47.66 96.1298 45.95C98.0298 44.24 99.1598 41.88 99.2898 39.32C99.4198 36.76 98.5498 34.3 96.8398 32.4C94.9498 30.3 92.3298 29.23 89.7098 29.23V29.24Z" fill="white" stroke="white" stroke-width="3"/>
+                <path d="M117.5 237.02C117.22 237.02 116.94 237.02 116.67 237C112.51 236.78 108.69 234.96 105.9 231.86C100.15 225.47 100.66 215.59 107.05 209.84C110.15 207.05 114.14 205.64 118.3 205.86C122.46 206.08 126.28 207.9 129.07 211C131.86 214.1 133.27 218.09 133.05 222.25C132.83 226.41 131.01 230.23 127.91 233.02C125.02 235.62 121.35 237.03 117.5 237.03V237.02ZM110.35 227.85C112.06 229.75 114.42 230.88 116.98 231.01C119.54 231.14 122 230.27 123.9 228.56C125.8 226.85 126.93 224.49 127.06 221.93C127.19 219.37 126.32 216.91 124.61 215.01C122.9 213.11 120.54 211.98 117.98 211.85C115.43 211.72 112.96 212.59 111.06 214.3C107.13 217.84 106.81 223.92 110.35 227.85Z" fill="white" stroke="white" stroke-width="3"/>
+                <path d="M273.58 587.88C239.36 587.88 208.91 581.92 183.85 570.15C151.2 554.82 128.6 530.1 120.21 500.56C113.97 478.57 116.26 455.3 126.66 435.03C137.7 413.51 156.96 396.55 182.35 385.96C216.47 371.73 236.81 352.67 242.8 329.32C246.44 315.12 244.91 298.88 238.24 281.05C231.47 262.94 219.22 242.72 201.86 220.96C200.83 219.67 201.04 217.78 202.33 216.74C203.62 215.71 205.51 215.92 206.55 217.21C242.3 262.01 256.46 300.23 248.61 330.81C242.13 356.09 220.61 376.51 184.66 391.5C160.6 401.54 142.39 417.54 132 437.77C122.29 456.68 120.15 478.4 125.98 498.92C133.89 526.77 155.34 550.13 186.4 564.72C222.91 581.86 271.41 586.27 326.65 577.46C328.28 577.2 329.82 578.31 330.09 579.95C330.35 581.59 329.24 583.12 327.6 583.39C308.78 586.39 290.71 587.88 273.58 587.88Z" fill="white" stroke="white" stroke-width="4"/>
               </g>
-              <defs>
-                <clipPath id="clip0_2026_273">
-                  <rect width="330.12" height="587.88" fill="white"/>
-                </clipPath>
-              </defs>
             </svg>
-          </div>
-          
-          <!-- Content Container -->
-          <div style="
-            position: relative;
-            z-index: 1;
-            display: flex; 
-            flex-direction: column; 
-            width: 100%; 
-            text-align: left;
-            padding-bottom: 20px;
-            padding-left: 65px;
-          ">
-            <!-- Title -->
-            <div style="
-              font-size: 20px; 
-              font-weight: bold; 
-              color: #606060; 
-              text-align: left;
-              margin-bottom: 20px;
-              /* Shift title left without affecting appointments */
-              margin-left: -80px; /* pull into leaf space */
-              padding-left: 4px; /* slight inset so text not flush */
-              position: relative;
-              z-index: 2; /* ensure over leaf graphic */
-            ">
-              Dr Mahsa Savadkohi Appointments
-            </div>
             
-            ${eventsHtml}
+            <!-- Content -->
+            <div style="position: relative; z-index: 1; text-align: left;">
+              <!-- Header -->
+              <div style="margin-bottom: 16px; text-align: left;">
+                <div style="color: #606060; font-size: 20px; font-weight: bold; margin-bottom: 4px; text-align: left;">
+                  Dr. Mahsa Savadkohi
+                </div>
+                <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px; text-align: left;">
+                  Upcoming Appointments
+                </div>
+              </div>
+              
+              <!-- Appointments -->
+              <div>
+              ${appointmentsHtml}
+              </div>
+            </div>
           </div>
         `;
       ]]]
