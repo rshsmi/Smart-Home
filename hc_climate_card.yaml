@@ -13,6 +13,11 @@ hc_climate_card:
     humidity_entity:
     humidity_graph_color: var(--color-blue)
     current_temp_label: "Current Temperature: "
+    show_weather_legend: true
+    weather_entity: weather.forecast_home
+    weather_temp_color: '#FF6B6B'
+    weather_humidity_color: '#4ECDC4'
+    weather_wind_color: '#B0B0B0'
   show_label: true
   show_state: false
   show_name: false
@@ -55,7 +60,8 @@ hc_climate_card:
           's buttons'
           'graph graph'
           'humidity_graph humidity_graph'
-      - grid-template-rows: repeat(5, min-content)
+          'legend legend'
+      - grid-template-rows: repeat(6, min-content)
     card:
       - padding: 20px
       - position: relative
@@ -99,6 +105,13 @@ hc_climate_card:
         - width: 100%
         - height: 30%
         - z-index: 0
+      legend:
+        - display: flex
+        - justify-content: flex-start
+        - align-items: center
+        - margin-top: 10px
+        - gap: 20px
+        - z-index: 2
 
   custom_fields:
     buttons:
@@ -201,6 +214,41 @@ hc_climate_card:
             }
         tap_action:
           action: none
+
+    legend: |
+      [[[
+        if (!variables.show_weather_legend || !variables.weather_entity) {
+          return '';
+        }
+        
+        const weatherState = states[variables.weather_entity];
+        if (!weatherState) {
+          return '';
+        }
+        
+        const temp = weatherState.attributes.temperature;
+        const humidity = weatherState.attributes.humidity;
+        const windSpeed = weatherState.attributes.wind_speed;
+        
+        const tempColor = variables.weather_temp_color || '#FF6B6B';
+        const humidityColor = variables.weather_humidity_color || '#4ECDC4';
+        const windColor = variables.weather_wind_color || '#B0B0B0';
+        
+        return `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${tempColor};"></div>
+            <span style="font-size: 14px; font-weight: 500;">${temp}°C</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${humidityColor};"></div>
+            <span style="font-size: 14px; font-weight: 500;">${humidity}%</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${windColor};"></div>
+            <span style="font-size: 14px; font-weight: 500;">${windSpeed} km/h</span>
+          </div>
+        `;
+      ]]]
 
     humidity_graph:
       card:

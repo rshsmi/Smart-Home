@@ -1,9 +1,9 @@
-type: 'custom:hc_light_weather'    # tells HA to use your custom light weather card
-# Multi-entity card: light.first_floor, light.front_door, weather.forecast_home
+type: 'custom:hc_light_card'    # tells HA to use your custom light card
+# Multi-entity card: light.first_floor, light.front_door
 
-hc_light_weather:
+hc_light_card:
   type: 'custom:button-card'
-  entity: weather.forecast_home  # primary entity for the card
+  entity: light.first_floor  # primary entity for the card
   show_label: false
   show_state: false
   show_name: false
@@ -15,8 +15,7 @@ hc_light_weather:
     grid:
       - grid-template-areas: |
           'light_first_floor light_front_door'
-          'weather_graphs weather_graphs'
-      - grid-template-rows: 170px 200px
+      - grid-template-rows: 170px
       - grid-template-columns: 1fr 1fr
       - gap: 20px
     card:
@@ -24,7 +23,7 @@ hc_light_weather:
       - border-radius: 12px
       - padding: 20px
       - box-shadow: '0 2px 8px rgba(0,0,0,0.1)'
-      - height: 410px
+      - height: auto
     custom_fields:
       light_first_floor:
         - grid-area: light_first_floor
@@ -34,13 +33,6 @@ hc_light_weather:
         - grid-area: light_front_door
         - justify-self: center
         - align-self: center
-      weather_graphs:
-        - grid-area: weather_graphs
-        - position: relative
-        - width: 100%
-        - height: 200px
-        - justify-self: stretch
-        - align-self: stretch
 
   custom_fields:
     light_first_floor:
@@ -132,76 +124,3 @@ hc_light_weather:
             - font-weight: bold
           icon:
             - size: 32px
-
-    weather_graphs:
-      card:
-        type: custom:mini-graph-card
-        entities:
-          - entity: weather.forecast_home
-            attribute: temperature
-            name: >
-              [[[
-                return `${states['weather.forecast_home'].attributes.temperature}°C`;
-              ]]]
-            show_fill: true
-            show_line: false
-            color: "#FF6B6B"
-            y_axis: secondary
-          - entity: weather.forecast_home
-            attribute: humidity  
-            name: >
-              [[[
-                return `${states['weather.forecast_home'].attributes.humidity}%`;
-              ]]]
-            show_fill: true
-            show_line: false
-            color: "#4ECDC4"
-            y_axis: primary
-          - entity: weather.forecast_home
-            attribute: wind_speed
-            name: >
-              [[[
-                return `${states['weather.forecast_home'].attributes.wind_speed} km/h`;
-              ]]]
-            show_fill: true
-            show_line: false
-            color: "#B0B0B0"
-            y_axis: secondary
-        show:
-          name: false
-          icon: false
-          state: false
-          points: false
-          labels: false
-          legend: true
-        height: 200
-        line_width: 1
-        aggregate_func: max
-        smoothing: true
-        tap_action:
-          action: none
-        card_mod:
-          style: |
-            ha-card {
-              background: none !important;
-              box-shadow: none !important;
-              border: none !important;
-              width: calc(100% + 60px) !important;
-              height: 100% !important;
-              margin: 0 -30px !important;
-              padding: 0 !important;
-              overflow: visible !important;
-            }
-            .graph {
-              width: 100% !important;
-              margin: 0 !important;
-              padding: 0 !important;
-            }
-            .graph__legend {
-              display: flex !important;
-              justify-content: flex-start !important;
-              width: 100% !important;
-              margin: 0 30px !important;
-              gap: 20px !important;
-            }
-
