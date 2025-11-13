@@ -18,8 +18,8 @@ cards:
           humidity_entity: sensor.downstairs_humidity
           humidity_graph_color: 'var(--color-blue)'
       - type: custom:button-card
+        template: hc_light_card
+        entity: light.first_floor
+      - type: custom:button-card
         template: hc_calendar_card
         entity: calendar.ravan_studio
-      - type: custom:button-card
-        template: hc_light_weather
-        entity: weather.forecast_home

@@ -59,12 +59,12 @@ hc_light_card:
           - value: 'off'
             styles:
               card:
-                - background-color: 'transparent'
-                - color: 'var(--primary-text-color)'
+                - background-color: '#505050'
+                - color: '#b0b0b0'
               name:
-                - color: 'var(--primary-text-color)'
+                - color: '#b0b0b0'
               icon:
-                - color: 'var(--primary-text-color)'
+                - color: '#b0b0b0'
         styles:
           card:
             - border: 2px solid '#E8E8E8'
@@ -104,12 +104,12 @@ hc_light_card:
           - value: 'off'
             styles:
               card:
-                - background-color: 'transparent'
-                - color: 'var(--primary-text-color)'
+                - background-color: '#505050'
+                - color: '#b0b0b0'
               name:
-                - color: 'var(--primary-text-color)'
+                - color: '#b0b0b0'
               icon:
-                - color: 'var(--primary-text-color)'
+                - color: '#b0b0b0'
         styles:
           card:
             - border: 2px solid '#E8E8E8'
