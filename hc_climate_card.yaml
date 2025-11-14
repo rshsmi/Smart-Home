@@ -177,7 +177,7 @@ hc_climate_card:
                 service: climate.set_temperature
                 data:
                   temperature: |
-                    [[[ return states[entity.entity_id].attributes.temperature - 0.5 ]]]
+                    [[[ return states[entity.entity_id].attributes.temperature - 1 ]]]
                 target:
                   entity_id: "[[[ return entity.entity_id ]]]"
               show: |
