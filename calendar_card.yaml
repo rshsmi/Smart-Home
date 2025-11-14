@@ -5,6 +5,10 @@ hc_calendar_card:
   show_state: false
   show_name: false
   show_icon: false
+  triggers_update:
+    - input_text.event_1
+    - input_text.event_2
+    - input_text.event_3
   tap_action:
     action: call-service
     service: script.fetch_calendar_events
