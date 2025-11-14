@@ -5,7 +5,19 @@ default_config:
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
-  
+
+# 791475cfefbd4ce69d1e5d400bc203f1
+homeassistant:
+  auth_providers:
+    - type: trusted_networks
+      trusted_networks:
+        - 192.168.1.0/24
+      trusted_users:
+        192.168.1.158:
+          - 791475cfefbd4ce69d1e5d400bc203f1
+      allow_bypass_login: true
+    - type: homeassistant ## this is important, shows login screen if login fails
+
 lovelace:
   mode: "storage"
   resources:
