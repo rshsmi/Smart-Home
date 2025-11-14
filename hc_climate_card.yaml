@@ -58,9 +58,9 @@ hc_climate_card:
           'l buttons'
           'n buttons'
           's buttons'
+          'legend legend'
           'graph graph'
           'humidity_graph humidity_graph'
-          'legend legend'
       - grid-template-rows: repeat(6, min-content)
     card:
       - padding: 20px
@@ -108,7 +108,7 @@ hc_climate_card:
       legend:
         - display: flex
         - justify-content: flex-start
-        - align-items: center
+        - align-items: left
         - margin-top: 10px
         - gap: 20px
         - z-index: 2
