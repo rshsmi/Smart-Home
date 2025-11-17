@@ -92,13 +92,19 @@ hc_stock_markets_card:
           const percentValue = changePercent != null ? parseFloat(changePercent) : 0;
           const percentStr = percentValue.toFixed(2) + '%';
           const isPositive = trending.toLowerCase() === 'up';
-          const arrow = isPositive ? '↑' : '↓';
-          const arrowColor = isPositive ? '#2ecc71' : '#e74c3c';
-          const boxBgColor = isPositive ? '#2ecc71' : '#FF6B6B';
           // Get market time
           const now = new Date();
           const marketTime = new Date(now.toLocaleString('en-US', { timeZone: market.timezone }));
           const timeString = formatTime(marketTime);
+          // Market open/close logic (after marketTime is defined)
+          const dayOfWeek = marketTime.getDay();
+          const isWorkDay = market.workDays.includes(dayOfWeek);
+          const openMinutes = market.openHour * 60 + market.openMinute;
+          const closeMinutes = market.closeHour * 60 + market.closeMinute;
+          const currentMinutes = marketTime.getHours() * 60 + marketTime.getMinutes();
+          const isOpen = isWorkDay && currentMinutes >= openMinutes && currentMinutes < closeMinutes;
+          // Set box color: gray if closed, else green/red
+          const boxBgColor = isOpen ? (isPositive ? '#2ecc71' : '#FF6B6B') : '#bdbdbd';
           // Each box: rounded square, horizontal layout, no city name
           marketsHtml += `
             <div style="
