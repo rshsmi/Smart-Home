@@ -19,7 +19,10 @@ cards:
           humidity_graph_color: 'var(--color-blue)'
       - type: custom:button-card
         template: hc_light_card
-        entity: light.first_floor
+        entity: weather.forecast_home
+      - type: custom:button-card
+        template: hc_stock_markets_card
+        entity: sensor.yahoofinance_ixic
       - type: custom:button-card
         template: hc_calendar_card
         entity: calendar.ravan_studio

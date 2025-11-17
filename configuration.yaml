@@ -6,6 +6,10 @@ default_config:
 frontend:
   themes: !include_dir_merge_named themes
 
+recorder:
+  purge_keep_days: 7
+  auto_purge: true
+
 # 791475cfefbd4ce69d1e5d400bc203f1
 homeassistant:
   auth_providers:
@@ -17,6 +21,16 @@ homeassistant:
           - 791475cfefbd4ce69d1e5d400bc203f1
       allow_bypass_login: true
     - type: homeassistant ## this is important, shows login screen if login fails
+
+yahoofinance:
+  symbols:
+    - ^IXIC
+    - ^NYA
+    - ^FTSE
+
+  show_trending_icon: true
+  decimal_places: 2
+  scan_interval: 300
 
 lovelace:
   mode: "storage"
