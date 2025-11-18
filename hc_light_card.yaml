@@ -1,5 +1,4 @@
-type: 'custom:hc_light_card'    # tells HA to use your custom light card
-# Multi-entity card: light.first_floor, light.front_door
+type: 'custom:hc_light_card'
 
 hc_light_card:
   type: 'custom:button-card'
@@ -14,27 +13,18 @@ hc_light_card:
   styles:
     grid:
       - grid-template-areas: |
-          'particles particles'
-          'light_first_floor light_front_door'
-      - grid-template-rows: 0 170px
-      - grid-template-columns: 1fr 1fr
+          'light_first_floor light_front_door light_stairway'
+      - grid-template-rows: 1fr
+      - grid-template-columns: 1fr 1fr 1fr
       - gap: 20px
     card:
-      - background: 'white'
+      - background: 'transparent'
       - border-radius: 12px
-      - padding: 20px
-      - box-shadow: '0 2px 8px rgba(0,0,0,0.1)'
+      - padding: 8px
       - height: auto
       - position: relative
       - overflow: hidden
     custom_fields:
-      particles:
-        - position: absolute
-        - top: 0
-        - left: 0
-        - width: 100%
-        - height: 100%
-        - z-index: 0
       light_first_floor:
         - grid-area: light_first_floor
         - justify-self: center
@@ -47,114 +37,14 @@ hc_light_card:
         - align-self: center
         - position: relative
         - z-index: 2
+      light_stairway:
+        - grid-area: light_stairway
+        - justify-self: center
+        - align-self: center
+        - position: relative
+        - z-index: 2
 
   custom_fields:
-    particles: |
-      [[[
-        const light1 = states['light.first_floor'].state;
-        const light2 = states['light.front_door'].state;
-        const isAnyOn = light1 === 'on' || light2 === 'on';
-        const particleColor = isAnyOn ? 'rgba(255, 171, 145, 0.7)' : 'rgba(150, 150, 150, 0.6)';
-        
-        return `
-          <style>
-            @keyframes float {
-              0%, 100% { transform: translateY(0px) translateX(0px); }
-              25% { transform: translateY(-50px) translateX(30px); }
-              50% { transform: translateY(-30px) translateX(-30px); }
-              75% { transform: translateY(-40px) translateX(15px); }
-            }
-            .particle {
-              position: absolute;
-              background: ${particleColor};
-              border-radius: 50%;
-              pointer-events: none;
-              transition: background 0.5s ease;
-            }
-            .particle:nth-child(1) { width: 3px; height: 3px; top: 8%; left: 12%; animation: float 8s infinite ease-in-out; }
-            .particle:nth-child(2) { width: 2px; height: 2px; top: 18%; left: 78%; animation: float 6s infinite ease-in-out 1s; }
-            .particle:nth-child(3) { width: 4px; height: 4px; top: 28%; left: 38%; animation: float 10s infinite ease-in-out 2s; }
-            .particle:nth-child(4) { width: 2px; height: 2px; top: 48%; left: 68%; animation: float 7s infinite ease-in-out 0.5s; }
-            .particle:nth-child(5) { width: 3px; height: 3px; top: 58%; left: 18%; animation: float 9s infinite ease-in-out 1.5s; }
-            .particle:nth-child(6) { width: 2px; height: 2px; top: 73%; left: 48%; animation: float 8s infinite ease-in-out 3s; }
-            .particle:nth-child(7) { width: 3px; height: 3px; top: 83%; left: 88%; animation: float 11s infinite ease-in-out 2.5s; }
-            .particle:nth-child(8) { width: 4px; height: 4px; top: 13%; left: 58%; animation: float 7s infinite ease-in-out 1.2s; }
-            .particle:nth-child(9) { width: 2px; height: 2px; top: 38%; left: 8%; animation: float 9s infinite ease-in-out 0.8s; }
-            .particle:nth-child(10) { width: 3px; height: 3px; top: 68%; left: 73%; animation: float 10s infinite ease-in-out 2.8s; }
-            .particle:nth-child(11) { width: 2px; height: 2px; top: 23%; left: 33%; animation: float 8s infinite ease-in-out 1.8s; }
-            .particle:nth-child(12) { width: 3px; height: 3px; top: 53%; left: 83%; animation: float 9s infinite ease-in-out 0.3s; }
-            .particle:nth-child(13) { width: 4px; height: 4px; top: 3%; left: 43%; animation: float 7s infinite ease-in-out 2.2s; }
-            .particle:nth-child(14) { width: 2px; height: 2px; top: 88%; left: 28%; animation: float 10s infinite ease-in-out 1.6s; }
-            .particle:nth-child(15) { width: 3px; height: 3px; top: 33%; left: 63%; animation: float 8s infinite ease-in-out 3.5s; }
-            .particle:nth-child(16) { width: 2px; height: 2px; top: 43%; left: 23%; animation: float 9s infinite ease-in-out 0.9s; }
-            .particle:nth-child(17) { width: 3px; height: 3px; top: 78%; left: 53%; animation: float 11s infinite ease-in-out 2.1s; }
-            .particle:nth-child(18) { width: 4px; height: 4px; top: 10%; left: 70%; animation: float 7s infinite ease-in-out 1.4s; }
-            .particle:nth-child(19) { width: 2px; height: 2px; top: 63%; left: 40%; animation: float 10s infinite ease-in-out 3.2s; }
-            .particle:nth-child(20) { width: 3px; height: 3px; top: 93%; left: 66%; animation: float 8s infinite ease-in-out 0.6s; }
-            .particle:nth-child(21) { width: 3px; height: 3px; top: 15%; left: 25%; animation: float 9s infinite ease-in-out 1.1s; }
-            .particle:nth-child(22) { width: 2px; height: 2px; top: 35%; left: 55%; animation: float 7s infinite ease-in-out 2.4s; }
-            .particle:nth-child(23) { width: 4px; height: 4px; top: 45%; left: 85%; animation: float 10s infinite ease-in-out 0.7s; }
-            .particle:nth-child(24) { width: 2px; height: 2px; top: 65%; left: 15%; animation: float 8s infinite ease-in-out 3.1s; }
-            .particle:nth-child(25) { width: 3px; height: 3px; top: 75%; left: 35%; animation: float 11s infinite ease-in-out 1.9s; }
-            .particle:nth-child(26) { width: 2px; height: 2px; top: 20%; left: 50%; animation: float 9s infinite ease-in-out 2.6s; }
-            .particle:nth-child(27) { width: 3px; height: 3px; top: 50%; left: 90%; animation: float 7s infinite ease-in-out 0.4s; }
-            .particle:nth-child(28) { width: 4px; height: 4px; top: 85%; left: 60%; animation: float 10s infinite ease-in-out 2.9s; }
-            .particle:nth-child(29) { width: 2px; height: 2px; top: 25%; left: 45%; animation: float 8s infinite ease-in-out 1.3s; }
-            .particle:nth-child(30) { width: 3px; height: 3px; top: 55%; left: 30%; animation: float 9s infinite ease-in-out 3.3s; }
-            .particle:nth-child(31) { width: 3px; height: 3px; top: 12%; left: 82%; animation: float 11s infinite ease-in-out 0.2s; }
-            .particle:nth-child(32) { width: 2px; height: 2px; top: 40%; left: 92%; animation: float 7s infinite ease-in-out 2.7s; }
-            .particle:nth-child(33) { width: 4px; height: 4px; top: 70%; left: 10%; animation: float 8s infinite ease-in-out 1.7s; }
-            .particle:nth-child(34) { width: 2px; height: 2px; top: 90%; left: 75%; animation: float 10s infinite ease-in-out 3.4s; }
-            .particle:nth-child(35) { width: 3px; height: 3px; top: 5%; left: 20%; animation: float 9s infinite ease-in-out 0.1s; }
-            .particle:nth-child(36) { width: 2px; height: 2px; top: 60%; left: 65%; animation: float 7s infinite ease-in-out 2.3s; }
-            .particle:nth-child(37) { width: 3px; height: 3px; top: 30%; left: 5%; animation: float 11s infinite ease-in-out 1.5s; }
-            .particle:nth-child(38) { width: 4px; height: 4px; top: 80%; left: 95%; animation: float 8s infinite ease-in-out 3.6s; }
-            .particle:nth-child(39) { width: 2px; height: 2px; top: 22%; left: 60%; animation: float 10s infinite ease-in-out 0.9s; }
-            .particle:nth-child(40) { width: 3px; height: 3px; top: 95%; left: 40%; animation: float 9s infinite ease-in-out 2.0s; }
-          </style>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-          <div class="particle"></div>
-        `;
-      ]]]
-    
     light_first_floor:
       card:
         type: custom:button-card
@@ -188,10 +78,10 @@ hc_light_card:
         styles:
           card:
             - border: 2px solid '#E8E8E8'
-            - border-radius: 8px
+            - border-radius: 20px
             - padding: 16px
-            - height: 150px
-            - width: 150px
+            - height: 170px
+            - width: 120px
             - cursor: pointer
             - transition: all 0.3s ease
           name:
@@ -233,10 +123,55 @@ hc_light_card:
         styles:
           card:
             - border: 2px solid '#E8E8E8'
-            - border-radius: 8px
+            - border-radius: 20px
             - padding: 16px
-            - height: 150px
-            - width: 150px
+            - height: 170px
+            - width: 120px
+            - cursor: pointer
+            - transition: all 0.3s ease
+          name:
+            - font-size: 14px
+            - font-weight: bold
+          icon:
+            - size: 32px
+
+    light_stairway:
+      card:
+        type: custom:button-card
+        entity: light.stairway
+        name: "Stairway"
+        show_name: true
+        show_state: false
+        show_icon: true
+        icon: mdi:lightbulb
+        tap_action:
+          action: toggle
+        state:
+          - value: 'on'
+            styles:
+              card:
+                - background-color: '#FFAB91'
+                - color: 'white'
+              name:
+                - color: 'white'
+              icon:
+                - color: 'white'
+          - value: 'off'
+            styles:
+              card:
+                - background-color: '#505050'
+                - color: '#b0b0b0'
+              name:
+                - color: '#b0b0b0'
+              icon:
+                - color: '#b0b0b0'
+        styles:
+          card:
+            - border: 2px solid '#E8E8E8'
+            - border-radius: 20px
+            - padding: 16px
+            - height: 170px
+            - width: 120px
             - cursor: pointer
             - transition: all 0.3s ease
           name:
