@@ -5,6 +5,12 @@ cards:
   - type: vertical-stack
     cards:
       - type: custom:button-card
+        template: hc_stock_markets_card
+        entity: sensor.yahoofinance_ixic
+      - type: custom:button-card
+        template: hc_london_underground_card
+        entity: sensor.london_underground_northern
+      - type: custom:button-card
         template: hc_climate_card
         entity: climate.downstairs
         variables:
@@ -20,9 +26,11 @@ cards:
       - type: custom:button-card
         template: hc_light_card
         entity: weather.forecast_home
-      - type: custom:button-card
-        template: hc_stock_markets_card
-        entity: sensor.yahoofinance_ixic
+      - type: picture-entity
+        entity: camera.front_door_2
+        camera_view: live
+        fit_mode: cover
+        show_state: false
+        show_name: false
       - type: custom:button-card
         template: hc_calendar_card
-        entity: calendar.ravan_studio
