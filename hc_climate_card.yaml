@@ -1,5 +1,5 @@
-type: 'custom:hc_climate_card' 
-entity: climate.downstairs
+type: 'custom:hc_climate_card'    # tells HA to use your custom climate card
+entity: climate.downstairs        # the thermostat entity it will read from
 
 hc_climate_card:
   variables:
@@ -46,8 +46,8 @@ hc_climate_card:
           off: 'var(--subtext-color)'
         };
         const statusColor = colors[status] || 'var(--subtext-color)';
-        return `<div style=\"text-align:left;line-height:1;\">${temp}<sup style=\"font-size:40px;\">°</sup></div>
-                <div style=\"text-align:left;margin-top:6px;font-size:16px;font-weight:500;color:${statusColor};letter-spacing:0.4px;\">${status}</div>`;
+      const tempColor = action === 'heating' ? '#FFB88C' : 'var(--subtext-color)';
+      return `<div style="text-align:left;line-height:1;color:${tempColor};">${temp}<sup style="font-size:40px;">°</sup></div>`;
     ]]]
 
   show_icon: false
@@ -177,7 +177,7 @@ hc_climate_card:
                 service: climate.set_temperature
                 data:
                   temperature: |
-                    [[[ return states[entity.entity_id].attributes.temperature - 1 ]]]
+                    [[[ return states[entity.entity_id].attributes.temperature - 0.5 ]]]
                 target:
                   entity_id: "[[[ return entity.entity_id ]]]"
               show: |
