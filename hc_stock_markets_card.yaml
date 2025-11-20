@@ -18,8 +18,7 @@ hc_stock_markets_card:
       - border-radius: 12px
       - padding: 8px
       - box-shadow: 'none'
-      - min-height: 120px
-      - height: auto
+      # Removed fixed height and min-height for better centering
       - position: relative
       - overflow: hidden
     custom_fields:
@@ -103,42 +102,41 @@ hc_stock_markets_card:
           const closeMinutes = market.closeHour * 60 + market.closeMinute;
           const currentMinutes = marketTime.getHours() * 60 + marketTime.getMinutes();
           const isOpen = isWorkDay && currentMinutes >= openMinutes && currentMinutes < closeMinutes;
-          // Set box color: gray if closed, else green/red
-          const boxBgColor = isOpen ? (isPositive ? '#2ecc71' : '#FF6B6B') : '#bdbdbd';
-          // Each box: rounded square, horizontal layout, no city name
+          // Set abbr color: green if open/up, red if open/down, gray if closed
+          let abbrColor = '#bdbdbd';
+          if (isOpen) {
+            abbrColor = isPositive ? '#2ecc71' : '#FF6B6B';
+          }
+          // Each box: transparent background, colored abbr, dark gray percent
           marketsHtml += `
             <div style="
-              background: ${boxBgColor};
+              background: transparent;
               border: 1px solid #e0e0e0;
-              border-radius: 18px;
-              width: 180px;
+              border-radius: 0px;
+              width: 140px;
               min-width: 140px;
-              max-width: 200px;
-              height: 100px;
+              max-width: 140px;
+              height: 60px;
+              min-height: 60px;
+              max-height: 60px;
               display: flex;
-              flex-direction: column;
+              flex-direction: row;
               align-items: center;
               justify-content: center;
-              margin-right: 16px;
               margin-bottom: 0;
               box-sizing: border-box;
             ">
-              <div style="color: #2c3e50; font-size: 19px; font-weight: bold; margin-bottom: 4px; text-align: center;">
-                ${market.abbr}
-              </div>
-              <div style="color: #2c3e50; font-size: 15px; margin-bottom: 6px; text-align: center; font-weight: bold;">
-                ${timeString}
-              </div>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; color: #fff; justify-content: center;">
-                <span>${percentStr}</span>
+              <div style="display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 19px; font-weight: bold; height: 60px; text-align: center;">
+                <span style='color: ${abbrColor};'>${market.abbr}</span>
+                <span style='color: #505050;'>${percentStr}</span>
               </div>
             </div>
           `;
         });
-        // Wrap all boxes in a horizontal flex row
+        // Wrap all boxes in a horizontal flex row, perfectly centered
         return `
-          <div style="position: relative; width: 100%; height: 100%; box-sizing: border-box; margin: 0; padding: 12px;">
-            <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; gap: 0;">
+          <div style="position: relative; width: 100%; height: 100%; box-sizing: border-box; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; width: auto;">
               ${marketsHtml}
             </div>
           </div>
