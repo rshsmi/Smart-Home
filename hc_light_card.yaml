@@ -2,7 +2,7 @@ type: 'custom:hc_light_card'
 
 hc_light_card:
   type: 'custom:button-card'
-  entity: light.first_floor  # primary entity for the card
+  entity: light.first_floor
   show_label: false
   show_state: false
   show_name: false

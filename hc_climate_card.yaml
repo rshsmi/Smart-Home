@@ -1,5 +1,5 @@
-type: 'custom:hc_climate_card'    # tells HA to use your custom climate card
-entity: climate.downstairs        # the thermostat entity it will read from
+type: 'custom:hc_climate_card' 
+entity: climate.downstairs
 
 hc_climate_card:
   variables:

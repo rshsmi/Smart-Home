@@ -1,7 +1,3 @@
-## Simple Calendar Fetch Automation (limited to 3 events)
-## Place this file as automations.yaml (included via automation: !include automations.yaml)
-## Do NOT prefix with a top-level 'automation:' key here.
-
 - id: simple_calendar_fetch
   alias: Simple Calendar Fetch (3 events)
   description: Clears first 3 slots, fetches calendar events, stores earliest 3 upcoming.
