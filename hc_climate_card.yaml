@@ -55,10 +55,10 @@ hc_climate_card:
   styles:
     grid:
       - grid-template-areas: |
-         'l legend'
-         'n legend'
-         's legend'
-          'buttons buttons'
+          'l buttons'
+          'n buttons'
+          's buttons'
+          'legend legend'
           'graph graph'
           'humidity_graph humidity_graph'
       - grid-template-rows: repeat(6, min-content)
