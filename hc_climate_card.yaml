@@ -1,18 +1,17 @@
-type: 'custom:hc_climate_card'    # tells HA to use your custom climate card
-entity: climate.downstairs        # the thermostat entity it will read from
-
+type: 'custom:hc_climate_card'
+entity: climate.downstairs
 hc_climate_card:
   variables:
     show_window_state: true
-    window_open_boolean:
+    window_open_boolean: null
     show_mode_state: true
     show_graph: true
-    graph_entity:
+    graph_entity: null
     graph_color: var(--color-red)
     show_humidity_graph: true
-    humidity_entity:
+    humidity_entity: null
     humidity_graph_color: var(--color-blue)
-    current_temp_label: "Current Temperature: "
+    current_temp_label: 'Current Temperature: '
     show_weather_legend: true
     weather_entity: weather.forecast_home
     weather_temp_color: '#FF6B6B'
@@ -23,47 +22,36 @@ hc_climate_card:
   show_name: false
   tap_action:
     action: none
-
   state_display: |
-    [[[ 
+    [[[
       return variables.current_temp_label + states[entity.entity_id].attributes.current_temperature + "°";
     ]]]
   label: |
-    [[[ 
+    [[[
       const s = states[entity.entity_id];
       const temp = s.attributes.current_temperature;
-      const action = s.attributes.hvac_action; // actual action: 'off', 'idle', 'heating', 'eco'
-
-      let status = action; // just return the action status directly
-
-        // Ensure action appears directly beneath large temperature, flush left.
-        // Use block wrappers to avoid grid auto-placement causing centering.
-        // Dynamic color mapping for status
-        const colors = {
-          heating: '#FFB88C', // peach/orange
-          eco: '#2e7d32',     // green
-          idle: 'var(--subtext-color)',
-          off: 'var(--subtext-color)'
-        };
-        const statusColor = colors[status] || 'var(--subtext-color)';
+      const action = s.attributes.hvac_action;
+      const colors = {
+        heating: '#FFB88C',
+        eco: '#2e7d32',
+        idle: 'var(--subtext-color)',
+        off: 'var(--subtext-color)'
+      };
       const tempColor = action === 'heating' ? '#FFB88C' : 'var(--subtext-color)';
       return `<div style="text-align:left;line-height:1;color:${tempColor};">${temp}<sup style="font-size:40px;">°</sup></div>`;
     ]]]
-
   show_icon: false
-
   styles:
     grid:
       - grid-template-areas: |
-          'l buttons'
-          'n buttons'
-          's buttons'
-          'legend legend'
-          'graph graph'
-          'humidity_graph humidity_graph'
-      - grid-template-rows: repeat(6, min-content)
+          "l buttons"
+          "legend buttons"
+          "s buttons"
+          "graph graph"
+          "humidity_graph humidity_graph"
+      - grid-template-rows: repeat(5, min-content)
     card:
-      - padding: 20px
+      - padding: 15px
       - position: relative
     name:
       - justify-self: start
@@ -91,28 +79,27 @@ hc_climate_card:
         - display: |
             [[[ return variables.show_graph && variables.graph_entity ? 'block' : 'none' ]]]
         - position: absolute
-        - bottom: 0
+        - bottom: 10px
         - left: 0
         - width: 100%
-        - height: 40%
+        - height: 35%
         - z-index: 0
       humidity_graph:
         - display: |
             [[[ return variables.show_humidity_graph && variables.humidity_entity ? 'block' : 'none' ]]]
         - position: absolute
-        - bottom: 0
+        - bottom: 10px
         - left: 0
         - width: 100%
-        - height: 30%
+        - height: 25%
         - z-index: 0
       legend:
+        - justify-self: start
         - display: flex
         - justify-content: flex-start
-        - align-items: left
+        - align-items: center
         - margin-top: 10px
-        - gap: 20px
         - z-index: 2
-
   custom_fields:
     buttons:
       card:
@@ -123,7 +110,7 @@ hc_climate_card:
                 'item_1'
                 'item_2'
                 'item_3'
-            - row-gap: 1.20
+            - row-gap: 1.2
           card:
             - padding: 10px
             - border-radius: 50px
@@ -182,13 +169,12 @@ hc_climate_card:
                   entity_id: "[[[ return entity.entity_id ]]]"
               show: |
                 [[[ return states[entity.entity_id].attributes.hvac_mode === 'heat' ]]]
-
     graph:
       card:
         type: custom:mini-graph-card
         entities:
           - entity: >-
-              [[[ 
+              [[[
                 return (typeof variables.graph_entity === 'string' && variables.graph_entity.length > 0)
                   ? variables.graph_entity
                   : '';
@@ -214,7 +200,6 @@ hc_climate_card:
             }
         tap_action:
           action: none
-
     legend: |
       [[[
         if (!variables.show_weather_legend || !variables.weather_entity) {
@@ -227,55 +212,47 @@ hc_climate_card:
         const temp = weatherState.attributes.temperature;
         const humidity = weatherState.attributes.humidity;
         const windSpeed = weatherState.attributes.wind_speed;
-        const condition = weatherState.state; // e.g., 'cloudy', 'sunny', 'rainy'
-        // Map condition to MDI icon
+        const condition = weatherState.state;
+
+        const weatherTempHTML = `
+          <div style="font-size: 45px; color: var(--primary-text-color); font-weight: 700; line-height: 1;">
+            ${temp}<sup style="font-size: 25px;">°</sup>
+          </div>`;
+
         const mdiIcons = {
-          'clear-night': 'mdi:weather-night',
-          'cloudy': 'mdi:weather-cloudy',
-          'fog': 'mdi:weather-fog',
-          'hail': 'mdi:weather-hail',
-          'lightning': 'mdi:weather-lightning',
-          'lightning-rainy': 'mdi:weather-lightning-rainy',
-          'partlycloudy': 'mdi:weather-partly-cloudy',
-          'pouring': 'mdi:weather-pouring',
-          'rainy': 'mdi:weather-rainy',
-          'snowy': 'mdi:weather-snowy',
-          'snowy-rainy': 'mdi:weather-snowy-rainy',
-          'sunny': 'mdi:weather-sunny',
-          'windy': 'mdi:weather-windy',
-          'windy-variant': 'mdi:weather-windy-variant',
+          'clear-night': 'mdi:weather-night', 'cloudy': 'mdi:weather-cloudy',
+          'fog': 'mdi:weather-fog', 'hail': 'mdi:weather-hail',
+          'lightning': 'mdi:weather-lightning', 'lightning-rainy': 'mdi:weather-lightning-rainy',
+          'partlycloudy': 'mdi:weather-partly-cloudy', 'pouring': 'mdi:weather-pouring',
+          'rainy': 'mdi:weather-rainy', 'snowy': 'mdi:weather-snowy',
+          'snowy-rainy': 'mdi:weather-snowy-rainy', 'sunny': 'mdi:weather-sunny',
+          'windy': 'mdi:weather-windy', 'windy-variant': 'mdi:weather-windy-variant',
           'exceptional': 'mdi:alert',
         };
         const mdiIcon = mdiIcons[condition] || 'mdi:weather-cloudy';
-        const iconHtml = `<ha-icon icon="${mdiIcon}" style="width:18px;height:18px;margin-right:6px;"></ha-icon>`;
-        const tempColor = variables.weather_temp_color || '#FF6B6B';
-        const humidityColor = variables.weather_humidity_color || '#4ECDC4';
+        const iconHtml = `<ha-icon icon="${mdiIcon}" style="width:45px;height:45px;"></ha-icon>`;
+
         const windColor = variables.weather_wind_color || '#B0B0B0';
+        const humidityColor = variables.weather_humidity_color || '#4ECDC4';
+
+        const windPart = `<div style="display: flex; align-items: center; gap: 8px;"><div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${windColor};"></div><span style="font-size: 14px; font-weight: 500;">${windSpeed} km/h</span></div>`;
+        const humidityPart = `<div style="display: flex; align-items: center; gap: 8px;"><div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${humidityColor};"></div><span style="font-size: 14px; font-weight: 500;">${humidity}%</span></div>`;
+        const otherDetailsHTML = `<div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-start;">${windPart}${humidityPart}</div>`;
+
         return `
-          <div style="display: flex; align-items: center; gap: 20px;">
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 15px;">
+            ${weatherTempHTML}
             ${iconHtml}
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${tempColor};"></div>
-              <span style="font-size: 14px; font-weight: 500;">${temp}°C</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${humidityColor};"></div>
-              <span style="font-size: 14px; font-weight: 500;">${humidity}%</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 10px; height: 10px; border-radius: 50%; background-color: ${windColor};"></div>
-              <span style="font-size: 14px; font-weight: 500;">${windSpeed} km/h</span>
-            </div>
+            ${otherDetailsHTML}
           </div>
         `;
       ]]]
-
     humidity_graph:
       card:
         type: custom:mini-graph-card
         entities:
           - entity: >-
-              [[[ 
+              [[[
                 return (typeof variables.humidity_entity === 'string' && variables.humidity_entity.length > 0)
                   ? variables.humidity_entity
                   : '';
