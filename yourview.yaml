@@ -8,6 +8,9 @@ cards:
         template: hc_stock_markets_card
         entity: sensor.yahoofinance_ixic
       - type: custom:button-card
+        template: hc_crypto_card
+        entity: sensor.binance_ticker_ethusdt
+      - type: custom:button-card
         template: hc_london_underground_card
         entity: sensor.london_underground_northern
       - type: custom:button-card
