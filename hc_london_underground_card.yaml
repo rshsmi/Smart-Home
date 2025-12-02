@@ -10,12 +10,11 @@ hc_london_underground_card:
   triggers_update:
     - sensor.london_underground_northern
     - sensor.london_underground_piccadilly
-    - sensor.london_underground_elizabeth
 
   styles:
     card:
       - background: 'transparent'
-      - border-radius: 12px
+      - border-radius: 0
       - padding: 8px
       - box-shadow: 'none'
       - position: relative
@@ -50,35 +49,29 @@ hc_london_underground_card:
           }
         ];
 
-        let tubeHtml = '';
-        lines.forEach((line, index) => {
-          const lineEntity = states[line.entity];
-          const status = lineEntity ? lineEntity.state : 'Unknown';
-          tubeHtml += `
-            <div style="
-              background: ${line.color};
-              border: 1px solid #e0e0e0;
-              border-radius: 0px;
-              width: 100%;
-              height: 50px;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              justify-content: flex-start;
-              margin-bottom: 0;
-              box-sizing: border-box;
-            ">
+        // Get statuses for both lines
+        const getStatus = (entity) => {
+          if (!entity) return 'Unknown';
+          if (entity.state === 'Good Service') return 'Good Service';
+          if (entity.state === 'Service Closed') return 'Service Closed';
+          return 'Delayed Service';
+        };
+        const piccadillyEntity = states['sensor.london_underground_piccadilly'];
+        const northernEntity = states['sensor.london_underground_northern'];
+        const piccadillyStatus = getStatus(piccadillyEntity);
+        const northernStatus = getStatus(northernEntity);
+        // Render both in a single row
+        return `
+          <div style="position: relative; width: 100%; height: 60px; box-sizing: border-box; margin: 0; padding: 0; display: flex; flex-direction: row; align-items: stretch; justify-content: center; gap: 8px;">
+            <div style="background: #0019A8; border: 1px solid #e0e0e0; border-radius: 0; width: 50%; height: 50px; display: flex; align-items: center; justify-content: flex-start; box-sizing: border-box;">
               <div style="display: flex; align-items: center; font-size: 22px; font-weight: bold; height: 50px; text-align: left; color: #fff; width: 100%; padding-left: 12px;">
-                <span style='color: #fff;'>${status}</span>
+                <span style='color: #fff;'>${piccadillyStatus}</span>
               </div>
             </div>
-          `;
-        });
-        // Wrap all boxes in a vertical flex column, full width
-        return `
-          <div style="position: relative; width: 100%; height: 100%; box-sizing: border-box; margin: 0; padding: 0; display: flex; align-items: stretch; justify-content: center;">
-            <div style="display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 8px; width: 100%;">
-              ${tubeHtml}
+            <div style="background: #000000; border: 1px solid #e0e0e0; border-radius: 0; width: 50%; height: 50px; display: flex; align-items: center; justify-content: flex-start; box-sizing: border-box;">
+              <div style="display: flex; align-items: center; font-size: 22px; font-weight: bold; height: 50px; text-align: left; color: #fff; width: 100%; padding-left: 12px;">
+                <span style='color: #fff;'>${northernStatus}</span>
+              </div>
             </div>
           </div>
         `;
