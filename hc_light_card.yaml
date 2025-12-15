@@ -13,9 +13,9 @@ hc_light_card:
   styles:
     grid:
       - grid-template-areas: |
-          'light_first_floor light_front_door light_stairway'
+          'light_first_floor light_front_door'
       - grid-template-rows: 1fr
-      - grid-template-columns: 1fr 1fr 1fr
+      - grid-template-columns: 1fr 1fr
       - gap: 20px
     card:
       - background: 'transparent'
@@ -33,12 +33,6 @@ hc_light_card:
         - z-index: 2
       light_front_door:
         - grid-area: light_front_door
-        - justify-self: center
-        - align-self: center
-        - position: relative
-        - z-index: 2
-      light_stairway:
-        - grid-area: light_stairway
         - justify-self: center
         - align-self: center
         - position: relative
@@ -95,51 +89,6 @@ hc_light_card:
         type: custom:button-card
         entity: light.front_door
         name: "Downstairs"
-        show_name: true
-        show_state: false
-        show_icon: true
-        icon: mdi:lightbulb
-        tap_action:
-          action: toggle
-        state:
-          - value: 'on'
-            styles:
-              card:
-                - background-color: '#FFAB91'
-                - color: 'white'
-              name:
-                - color: 'white'
-              icon:
-                - color: 'white'
-          - value: 'off'
-            styles:
-              card:
-                - background-color: '#505050'
-                - color: '#b0b0b0'
-              name:
-                - color: '#b0b0b0'
-              icon:
-                - color: '#b0b0b0'
-        styles:
-          card:
-            - border: 2px solid '#E8E8E8'
-            - border-radius: 20px
-            - padding: 16px
-            - height: 170px
-            - width: 120px
-            - cursor: pointer
-            - transition: all 0.3s ease
-          name:
-            - font-size: 14px
-            - font-weight: bold
-          icon:
-            - size: 32px
-
-    light_stairway:
-      card:
-        type: custom:button-card
-        entity: light.stairway
-        name: "Stairway"
         show_name: true
         show_state: false
         show_icon: true
