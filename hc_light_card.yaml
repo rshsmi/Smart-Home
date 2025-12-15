@@ -27,13 +27,13 @@ hc_light_card:
     custom_fields:
       light_first_floor:
         - grid-area: light_first_floor
-        - justify-self: center
+        - justify-self: stretch
         - align-self: center
         - position: relative
         - z-index: 2
       light_front_door:
         - grid-area: light_front_door
-        - justify-self: center
+        - justify-self: stretch
         - align-self: center
         - position: relative
         - z-index: 2
@@ -47,11 +47,11 @@ hc_light_card:
         show_name: true
         show_state: false
         show_icon: true
-        icon: mdi:lightbulb
         tap_action:
           action: toggle
         state:
           - value: 'on'
+            icon: mdi:lightbulb-on
             styles:
               card:
                 - background-color: '#FFAB91'
@@ -61,6 +61,7 @@ hc_light_card:
               icon:
                 - color: 'white'
           - value: 'off'
+            icon: mdi:lightbulb-outline
             styles:
               card:
                 - background-color: '#505050'
@@ -72,10 +73,9 @@ hc_light_card:
         styles:
           card:
             - border: 2px solid '#E8E8E8'
-            - border-radius: 20px
+            - border-radius: 0px
             - padding: 16px
-            - height: 170px
-            - width: 120px
+            - height: 120px
             - cursor: pointer
             - transition: all 0.3s ease
           name:
@@ -92,11 +92,11 @@ hc_light_card:
         show_name: true
         show_state: false
         show_icon: true
-        icon: mdi:lightbulb
         tap_action:
           action: toggle
         state:
           - value: 'on'
+            icon: mdi:lightbulb-on
             styles:
               card:
                 - background-color: '#FFAB91'
@@ -106,6 +106,7 @@ hc_light_card:
               icon:
                 - color: 'white'
           - value: 'off'
+            icon: mdi:lightbulb-outline
             styles:
               card:
                 - background-color: '#505050'
@@ -117,10 +118,9 @@ hc_light_card:
         styles:
           card:
             - border: 2px solid '#E8E8E8'
-            - border-radius: 20px
+            - border-radius: 0px
             - padding: 16px
-            - height: 170px
-            - width: 120px
+            - height: 120px
             - cursor: pointer
             - transition: all 0.3s ease
           name:
