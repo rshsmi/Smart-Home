@@ -73,11 +73,10 @@ hc_light_card:
         styles:
           card:
             - border: 2px solid '#E8E8E8'
-            - border-radius: 0px
+            - border-radius: 12px
             - padding: 16px
-            - height: 120px
+            - aspect-ratio: 1/1
             - cursor: pointer
-            - transition: all 0.3s ease
           name:
             - font-size: 14px
             - font-weight: bold
@@ -118,11 +117,10 @@ hc_light_card:
         styles:
           card:
             - border: 2px solid '#E8E8E8'
-            - border-radius: 0px
+            - border-radius: 12px
             - padding: 16px
-            - height: 120px
+            - aspect-ratio: 1/1
             - cursor: pointer
-            - transition: all 0.3s ease
           name:
             - font-size: 14px
             - font-weight: bold

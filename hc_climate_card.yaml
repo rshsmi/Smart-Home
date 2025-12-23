@@ -53,6 +53,7 @@ hc_climate_card:
     card:
       - padding: 15px
       - position: relative
+      - border-radius: 12px
     name:
       - justify-self: start
       - align-self: end
