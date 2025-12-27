@@ -1,0 +1,59 @@
+hc_ev_card:
+  type: 'custom:button-card'
+  show_state: true
+  show_name: true
+  name: 'EV Charging Cost'
+  state_display: |
+    [[[
+      var dispatching = states['binary_sensor.octopus_energy_00000000_0002_4000_8020_0000000dd633_intelligent_dispatching'];
+      
+      if (!dispatching) {
+        return 'No entity';
+      }
+      
+      var dispatches = dispatching.attributes.completed_dispatches;
+      var sessions = dispatching.attributes.started_dispatches;
+      
+      if (!dispatches || !sessions || dispatches.length === 0 || sessions.length === 0) {
+        return '£0.00';
+      }
+      
+      var last_session = sessions[sessions.length - 1];
+      var session_start = new Date(last_session.start).getTime();
+      var session_end = new Date(last_session.end).getTime();
+      
+      var total_kwh = 0;
+      
+      for (var i = 0; i < dispatches.length; i++) {
+        var dispatch = dispatches[i];
+        var dispatch_time = new Date(dispatch.start).getTime();
+        
+        if (dispatch_time >= session_start && dispatch_time < session_end) {
+          total_kwh += Math.abs(dispatch.charge_in_kwh);
+        }
+      }
+      
+      // Use 7p per kWh (typical Octopus Intelligent off-peak rate)
+      // You can adjust this value to match your actual rate
+      var price_per_kwh = 0.07;
+      var total_cost = total_kwh * price_per_kwh;
+      
+      return '£' + total_cost.toFixed(2);
+    ]]]
+  styles:
+    card:
+      - background: 'transparent'
+      - border-radius: 12px
+      - padding: 8px
+      - box-shadow: 'none'
+      - height: auto
+      - position: relative
+      - overflow: hidden
+    state:
+      - font-size: 16px
+    label:
+      - font-size: 14px
+      - justify-self: start
+      - align-self: start
+      - padding-left: 10px
+      - padding-top: 30px
