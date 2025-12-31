@@ -1,7 +1,7 @@
-hc_ev_card:
   type: 'custom:button-card'
   show_state: true
   show_name: true
+  show_label: true
   name: 'EV Charging Cost'
   state_display: |
     [[[
@@ -12,33 +12,36 @@ hc_ev_card:
       }
       
       var dispatches = dispatching.attributes.completed_dispatches;
-      var sessions = dispatching.attributes.started_dispatches;
       
-      if (!dispatches || !sessions || dispatches.length === 0 || sessions.length === 0) {
-        return '£0.00';
+      if (!dispatches || dispatches.length === 0) {
+        return 'Last: £0.00';
       }
       
-      var last_session = sessions[sessions.length - 1];
-      var session_start = new Date(last_session.start).getTime();
-      var session_end = new Date(last_session.end).getTime();
-      
+      // Sum all available dispatches (typically last 24-48 hours)
       var total_kwh = 0;
       
       for (var i = 0; i < dispatches.length; i++) {
         var dispatch = dispatches[i];
-        var dispatch_time = new Date(dispatch.start).getTime();
-        
-        if (dispatch_time >= session_start && dispatch_time < session_end) {
-          total_kwh += Math.abs(dispatch.charge_in_kwh);
-        }
+        total_kwh += Math.abs(dispatch.charge_in_kwh);
       }
       
-      // Use 7p per kWh (typical Octopus Intelligent off-peak rate)
-      // You can adjust this value to match your actual rate
+      // Use 7p per kWh
       var price_per_kwh = 0.07;
       var total_cost = total_kwh * price_per_kwh;
       
-      return '£' + total_cost.toFixed(2);
+      return 'Last: £' + total_cost.toFixed(2) + ' (' + total_kwh.toFixed(1) + ' kWh)';
+    ]]]
+  label: |
+    [[[
+      var monthly_cost = states['input_number.ev_monthly_charging_cost'];
+      var monthly_kwh = states['input_number.ev_monthly_charging_kwh'];
+      
+      if (!monthly_cost || !monthly_cost.state) {
+        return 'Month: £0.00 (0.0 kWh)';
+      }
+      
+      var kwh = monthly_kwh && monthly_kwh.state ? parseFloat(monthly_kwh.state).toFixed(1) : '0.0';
+      return 'Month: £' + parseFloat(monthly_cost.state).toFixed(2) + ' (' + kwh + ' kWh)';
     ]]]
   styles:
     card:

@@ -63,3 +63,76 @@
           data:
             value: "{{ cal_events['calendar.ravan_studio']['events'][2].start }}|{{ cal_events['calendar.ravan_studio']['events'][2].summary }}"
   mode: single
+
+- id: ev_add_session_cost_to_monthly_total
+  alias: EV Add Session Cost to Monthly Total
+  description: When charging session ends, add cost to monthly total
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.octopus_energy_00000000_0002_4000_8020_0000000dd633_intelligent_dispatching
+      from: 'on'
+      to: 'off'
+  condition: []
+  action:
+    - delay:
+        minutes: 5
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.ev_monthly_charging_cost
+      data:
+        value: >
+          {% set dispatches = state_attr('binary_sensor.octopus_energy_00000000_0002_4000_8020_0000000dd633_intelligent_dispatching', 'completed_dispatches') %}
+          {% set sessions = state_attr('binary_sensor.octopus_energy_00000000_0002_4000_8020_0000000dd633_intelligent_dispatching', 'started_dispatches') %}
+          {% set current_monthly = states('input_number.ev_monthly_charging_cost') | float(0) %}
+          {% if dispatches and sessions %}
+            {% set last_session = sessions | last %}
+            {% set session_kwh = dispatches 
+              | selectattr('start', '>=', last_session.start)
+              | selectattr('start', '<', last_session.end)
+              | sum(attribute='charge_in_kwh', start=0) %}
+            {% set session_cost = (session_kwh | abs * 0.07) %}
+            {{ (current_monthly + session_cost) | round(2) }}
+          {% else %}
+            {{ current_monthly }}
+          {% endif %}
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.ev_monthly_charging_kwh
+      data:
+        value: >
+          {% set dispatches = state_attr('binary_sensor.octopus_energy_00000000_0002_4000_8020_0000000dd633_intelligent_dispatching', 'completed_dispatches') %}
+          {% set sessions = state_attr('binary_sensor.octopus_energy_00000000_0002_4000_8020_0000000dd633_intelligent_dispatching', 'started_dispatches') %}
+          {% set current_monthly_kwh = states('input_number.ev_monthly_charging_kwh') | float(0) %}
+          {% if dispatches and sessions %}
+            {% set last_session = sessions | last %}
+            {% set session_kwh = dispatches 
+              | selectattr('start', '>=', last_session.start)
+              | selectattr('start', '<', last_session.end)
+              | sum(attribute='charge_in_kwh', start=0) %}
+            {{ (current_monthly_kwh + (session_kwh | abs)) | round(2) }}
+          {% else %}
+            {{ current_monthly_kwh }}
+          {% endif %}
+  mode: single
+
+- id: ev_reset_monthly_cost_on_first_of_month
+  alias: EV Reset Monthly Cost on 1st of Month
+  description: Reset the monthly EV charging cost and kWh counters on the first day of each month
+  trigger:
+    - platform: time
+      at: "00:00:01"
+  condition:
+    - condition: template
+      value_template: "{{ now().day == 1 }}"
+  action:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.ev_monthly_charging_cost
+      data:
+        value: 0
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.ev_monthly_charging_kwh
+      data:
+        value: 0
+  mode: single
