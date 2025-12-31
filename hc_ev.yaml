@@ -12,17 +12,44 @@
       }
       
       var dispatches = dispatching.attributes.completed_dispatches;
+      var sessions = dispatching.attributes.started_dispatches;
       
       if (!dispatches || dispatches.length === 0) {
-        return 'Last: £0.00';
+        return 'Last: £0.00 (0.0 kWh)';
       }
       
-      // Sum all available dispatches (typically last 24-48 hours)
+      // If sessions exist, try to filter by last session
+      // Otherwise sum all recent dispatches
       var total_kwh = 0;
       
-      for (var i = 0; i < dispatches.length; i++) {
-        var dispatch = dispatches[i];
-        total_kwh += Math.abs(dispatch.charge_in_kwh);
+      if (sessions && sessions.length > 0) {
+        var last_session = sessions[sessions.length - 1];
+        var session_start = new Date(last_session.start);
+        var session_end = new Date(last_session.end);
+        
+        // Try to match dispatches within session window
+        var matched = false;
+        for (var i = 0; i < dispatches.length; i++) {
+          var dispatch = dispatches[i];
+          var dispatch_start = new Date(dispatch.start);
+          
+          if (dispatch_start >= session_start && dispatch_start < session_end) {
+            total_kwh += Math.abs(dispatch.charge_in_kwh);
+            matched = true;
+          }
+        }
+        
+        // If no dispatches matched session times, fall back to summing all dispatches
+        if (!matched) {
+          for (var i = 0; i < dispatches.length; i++) {
+            total_kwh += Math.abs(dispatches[i].charge_in_kwh);
+          }
+        }
+      } else {
+        // No session data, sum all dispatches
+        for (var i = 0; i < dispatches.length; i++) {
+          total_kwh += Math.abs(dispatches[i].charge_in_kwh);
+        }
       }
       
       // Use 7p per kWh
