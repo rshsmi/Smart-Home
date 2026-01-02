@@ -87,19 +87,3 @@ input_text:
     name: "Event 3"
     max: 255
     initial: ""
-
-input_number:
-  ev_monthly_charging_cost:
-    name: "EV Monthly Charging Cost"
-    min: 0
-    max: 1000
-    step: 0.01
-    unit_of_measurement: "£"
-    mode: box
-  ev_monthly_charging_kwh:
-    name: "EV Monthly Charging kWh"
-    min: 0
-    max: 10000
-    step: 0.01
-    unit_of_measurement: "kWh"
-    mode: box

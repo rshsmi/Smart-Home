@@ -5,51 +5,16 @@
   name: 'EV Charging Cost'
   state_display: |
     [[[
-      var dispatching = states['binary_sensor.octopus_energy_00000000_0002_4000_8020_0000000dd633_intelligent_dispatching'];
+      var session_energy = states['sensor.anderson_ev_charger_current_session_energy'];
       
-      if (!dispatching) {
-        return 'No entity';
-      }
-      
-      var dispatches = dispatching.attributes.completed_dispatches;
-      var sessions = dispatching.attributes.started_dispatches;
-      
-      if (!dispatches || dispatches.length === 0) {
+      if (!session_energy || !session_energy.state) {
         return 'Last: £0.00 (0.0 kWh)';
       }
       
-      // If sessions exist, try to filter by last session
-      // Otherwise sum all recent dispatches
-      var total_kwh = 0;
+      var total_kwh = parseFloat(session_energy.state);
       
-      if (sessions && sessions.length > 0) {
-        var last_session = sessions[sessions.length - 1];
-        var session_start = new Date(last_session.start);
-        var session_end = new Date(last_session.end);
-        
-        // Try to match dispatches within session window
-        var matched = false;
-        for (var i = 0; i < dispatches.length; i++) {
-          var dispatch = dispatches[i];
-          var dispatch_start = new Date(dispatch.start);
-          
-          if (dispatch_start >= session_start && dispatch_start < session_end) {
-            total_kwh += Math.abs(dispatch.charge_in_kwh);
-            matched = true;
-          }
-        }
-        
-        // If no dispatches matched session times, fall back to summing all dispatches
-        if (!matched) {
-          for (var i = 0; i < dispatches.length; i++) {
-            total_kwh += Math.abs(dispatches[i].charge_in_kwh);
-          }
-        }
-      } else {
-        // No session data, sum all dispatches
-        for (var i = 0; i < dispatches.length; i++) {
-          total_kwh += Math.abs(dispatches[i].charge_in_kwh);
-        }
+      if (isNaN(total_kwh) || total_kwh === 0) {
+        return 'Last: £0.00 (0.0 kWh)';
       }
       
       // Use 7p per kWh
@@ -57,18 +22,6 @@
       var total_cost = total_kwh * price_per_kwh;
       
       return 'Last: £' + total_cost.toFixed(2) + ' (' + total_kwh.toFixed(1) + ' kWh)';
-    ]]]
-  label: |
-    [[[
-      var monthly_cost = states['input_number.ev_monthly_charging_cost'];
-      var monthly_kwh = states['input_number.ev_monthly_charging_kwh'];
-      
-      if (!monthly_cost || !monthly_cost.state) {
-        return 'Month: £0.00 (0.0 kWh)';
-      }
-      
-      var kwh = monthly_kwh && monthly_kwh.state ? parseFloat(monthly_kwh.state).toFixed(1) : '0.0';
-      return 'Month: £' + parseFloat(monthly_cost.state).toFixed(2) + ' (' + kwh + ' kWh)';
     ]]]
   styles:
     card:
