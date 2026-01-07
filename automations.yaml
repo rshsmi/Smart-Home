@@ -63,3 +63,44 @@
           data:
             value: "{{ cal_events['calendar.ravan_studio']['events'][2].start }}|{{ cal_events['calendar.ravan_studio']['events'][2].summary }}"
   mode: single
+
+- id: ev_track_session_energy
+  alias: EV Track Session Energy
+  description: Tracks the current session energy value
+  trigger:
+    - platform: state
+      entity_id: sensor.anderson_ev_charger_connection_session_energy
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.anderson_ev_charger_connection_session_energy') | float(0) > 0 }}"
+  action:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.ev_last_session_energy
+      data:
+        value: "{{ states('sensor.anderson_ev_charger_connection_session_energy') | float(0) }}"
+  mode: single
+
+- id: ev_accumulate_session_energy
+  alias: EV Accumulate Session Energy
+  description: Accumulates EV charging session energy when cable disconnects
+  trigger:
+    - platform: state
+      entity_id: sensor.anderson_ev_charger_connection_session_energy
+      to: "0"
+  condition:
+    - condition: template
+      value_template: "{{ states('input_number.ev_last_session_energy') | float(0) > 0 }}"
+  action:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.ev_accumulated_energy
+      data:
+        value: >
+          {{ (states('input_number.ev_accumulated_energy') | float(0) + states('input_number.ev_last_session_energy') | float(0)) | round(2) }}
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.ev_last_session_energy
+      data:
+        value: 0
+  mode: single

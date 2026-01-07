@@ -5,23 +5,24 @@
   name: 'EV Charging Cost'
   state_display: |
     [[[
-      var session_energy = states['sensor.anderson_ev_charger_current_session_energy'];
+      var session_energy = states['sensor.anderson_ev_charger_connection_session_energy'];
+      var accumulated_energy = states['sensor.ev_charger_accumulated_session_energy'];
       
-      if (!session_energy || !session_energy.state) {
-        return 'Last: £0.00 (0.0 kWh)';
+      if (!accumulated_energy || !accumulated_energy.state) {
+        return 'Total: £0.00 (0.0 kWh)';
       }
       
-      var total_kwh = parseFloat(session_energy.state);
+      var total_kwh = parseFloat(accumulated_energy.state);
       
       if (isNaN(total_kwh) || total_kwh === 0) {
-        return 'Last: £0.00 (0.0 kWh)';
+        return 'Total: £0.00 (0.0 kWh)';
       }
       
       // Use 7p per kWh
       var price_per_kwh = 0.07;
       var total_cost = total_kwh * price_per_kwh;
       
-      return 'Last: £' + total_cost.toFixed(2) + ' (' + total_kwh.toFixed(1) + ' kWh)';
+      return 'Total: £' + total_cost.toFixed(2) + ' (' + total_kwh.toFixed(1) + ' kWh)';
     ]]]
   styles:
     card:
